@@ -1,0 +1,101 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml"
+	xmlns:h="http://xmlns.jcp.org/jsf/html"
+	xmlns:f="http://xmlns.jcp.org/jsf/core"
+	xmlns:p="http://primefaces.org/ui"
+	xmlns:ui="http://xmlns.jcp.org/jsf/facelets">
+
+<h:head />
+	<h:body>
+		<ui:composition template="template.xhtml">
+
+			<f:metadata>
+				<f:viewParam name="fornecedorId" value="#{fornecedorBean.fornecedor.id}" />
+				<f:viewAction action="#{fornecedorBean.carregarFornecedorPelaId}"
+						      if="#{param.fornecedorId != null}" />
+			</f:metadata>
+
+			<ui:define name="titulo">
+				<p:outputPanel>Novo Fornecedor</p:outputPanel>
+			</ui:define>
+
+			<ui:define name="conteudo">
+				<h:form id="formFornecedor">
+					<p:messages id="messages" />
+						<p:fieldset legend="Dados do fornecedor">
+							<p:panelGrid columns="2">
+							
+								<p:outputLabel value="Nome:" for="nome" />
+								<p:inputText id="nome" value="#{fornecedorBean.fornecedor.nome}"
+											 required="true" requiredMessage="Nome obrigatório"
+							        	     validatorMessage="Nome não pode ser superior a 40">
+									<f:validateLength maximum="40" />
+									<f:ajax event="blur" render="messages" />
+								</p:inputText>
+								
+								<p:outputLabel value="Email:" for="email" />
+								<p:inputText id="email" value="#{fornecedorBean.fornecedor.email}" required="true" validatorMessage="Email inválido">
+									<f:attribute name="type" value="email" />
+									<f:passThroughAttribute name="placeholder" value="Email do fornecedor" />
+									<f:validateRegex pattern=".+@.+" />
+									<f:ajax event="blur" render="messages" />
+								</p:inputText>
+	
+								<p:commandButton value="Gravar fornecedor" action="#{fornecedorBean.gravar}" 
+											 	 process="@form" update="@form :formTabelaFornecedores:tabelaFornecedores">	
+								</p:commandButton>
+							</p:panelGrid>
+						</p:fieldset>
+					</h:form>
+
+					<br />
+
+					<h:form id="formTabelaFornecedores">
+						<p:dataTable value="#{fornecedorBean.fornecedores}" var="fornecedor"
+								 	 id="tabelaFornecedores" paginator="true" rows="5">
+							<f:facet name="header">Fornecedores</f:facet>
+					
+							<p:column headerText="Nome" sortBy="#{fornecedor.nome}"
+								      filterBy="#{fornecedor.nome}" filterMatchMode="startsWith">
+								<h:outputText value="#{fornecedor.nome}" />
+							</p:column>
+					
+							<p:column headerText="Email" sortBy="#{fornecedor.email}"
+									  filterBy="#{fornecedor.email}" filterMatchMode="startsWith">
+								<h:outputText value="#{fornecedor.email}" />
+							</p:column>
+					
+							<p:column headerText="Alterar" exportable="false">
+								<p:commandButton update=":formFornecedor" process="@this" value="Alterar" 
+												 actionListener="#{fornecedorBean.carregar(fornecedor)}" icon="fa fa-fw fa-edit" />
+							</p:column>
+
+							<p:column headerText="Remover" exportable="false">
+								<p:commandButton update="@form" process="@this" value="Remover"
+										  		 actionListener="#{fornecedorBean.remover(fornecedor)}" icon="fa fa-fw fa-remove" />
+							</p:column>
+						</p:dataTable>
+						<br></br>
+						<p:fieldset legend="Relatórios">
+							 <p:commandButton value="Exportar como XML" ajax="false" >
+      					 	 <p:dataExporter type="xml" target="tabelaFornecedores" fileName="fornecedores"/>
+    					 	 </p:commandButton>
+    					 
+    					 	 <p:commandButton value="Exportar como CSV" ajax="false" >
+        				 	 <p:dataExporter type="csv" target="tabelaFornecedores" fileName="fornecedores"/>
+    					 	 </p:commandButton>
+    					 
+    					 	 <p:commandButton value="Exportar como Excel" ajax="false" >
+        				 	 <p:dataExporter type="xls" target="tabelaFornecedores" fileName="fornecedores"/>
+    					 	 </p:commandButton>
+    					 
+    					 	 <p:commandButton value="Exportar como PDF" ajax="false" >
+        				 	 <p:dataExporter type="pdf" target="tabelaFornecedores" fileName="fornecedores"/>
+    					 	 </p:commandButton>
+    					 </p:fieldset>	 
+					</h:form>
+			</ui:define>
+		</ui:composition>
+	</h:body>
+</html>
